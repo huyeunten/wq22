@@ -8,12 +8,11 @@ def floatify(ints):
     for i in ints:
         if type(i) == int:
             i = float(i)
-    for i in ints:
         if type(i) != float:
             return False
     return True
 
-a = [1,2,3.5,"hi"]
+a = [1,2,3.5]
 print("Floatify: ", floatify(a))
 
 # 2
