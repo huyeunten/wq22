@@ -1,4 +1,6 @@
 .gitattributes
-pytest_cache/
+cpsc3400/pytest_cache/
 .vscode/
 workspace.code-workspace
+node_modules/
+package-lock.json

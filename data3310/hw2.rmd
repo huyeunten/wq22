@@ -1,0 +1,32 @@
+---
+title: HW 2
+author: Haley Uyeunten
+output: html_document
+---
+
+# Activity 1
+```{r}
+data <- c(-1, 0, 4, 15)
+root_data <- sqrt(data)
+root_data
+```
+
+# Activity 2
+```{r}
+library(tidyverse)
+data(txhousing)
+library(dplyr)
+glimpse(txhousing)
+```
+The data set contains 8,602 observations and 9 variables. The variables are
+city (character), year (int), month (int), sales (double), volume (double),
+median (double), listings (double), inventory (double), and date (double). 
+
+# Activity 3
+```{r}
+library(gapminder)
+data(gapminder)
+glimpse(gapminder)
+g <- ggplot(data = gapminder, mapping = aes(x = pop, y = gdpPercap))
+g + geom_point()
+```
