@@ -10,6 +10,7 @@ data <- c(-1, 0, 4, 15)
 root_data <- sqrt(data)
 root_data
 ```
+R gives a warning that the square root of a negative number is not a number.
 
 # Activity 2
 ```{r}
@@ -30,3 +31,7 @@ glimpse(gapminder)
 g <- ggplot(data = gapminder, mapping = aes(x = pop, y = gdpPercap))
 g + geom_point()
 ```
+
+There could be strands of data points because there are many countries with
+similar GDPs but different populations, and many countries with similar
+populations but different GDPs.
