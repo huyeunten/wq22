@@ -1,0 +1,10 @@
+```{r}
+library(tidyverse)
+library(nycflights13)
+airlines
+```
+
+```{r}
+alaska_flights <- flights %>%
+    filter(carrier == "AS")
+```

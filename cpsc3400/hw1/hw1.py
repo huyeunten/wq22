@@ -70,15 +70,16 @@ def print_dictionary(dict):
     :return: None
     """
     for i in sorted(dict):
-        print(i, ":", dict[i])
+        print(i, ": ", dict[i], sep="")
 
-dict = process_file("sample1.txt")
-print_dictionary(dict)
-blue_first_votes = get_first_place_votes(dict, "blue")
-print(blue_first_votes)
-green_first_votes = get_first_place_votes(dict, "green")
-print(green_first_votes)
-# create_favorite_color_list
-# print ^^
-cs_dict = create_color_score_dict(dict)
-print_dictionary(cs_dict)
+if __name__ == "__main__":
+    dict = process_file("sample1.txt")
+    print_dictionary(dict)
+    blue_first_votes = get_first_place_votes(dict, "blue")
+    print(blue_first_votes)
+    green_first_votes = get_first_place_votes(dict, "green")
+    print(green_first_votes)
+    # create_favorite_color_list
+    # print ^^
+    cs_dict = create_color_score_dict(dict)
+    print_dictionary(cs_dict)

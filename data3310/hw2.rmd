@@ -4,6 +4,13 @@ author: Haley Uyeunten
 output: html_document
 ---
 
+```{r}
+library(tidyverse)
+library(dplyr)
+library(gapminder)
+library(nycflights13)
+```
+
 # Activity 1
 ```{r}
 data <- c(-1, 0, 4, 15)
@@ -14,9 +21,7 @@ R gives a warning that the square root of a negative number is not a number.
 
 # Activity 2
 ```{r}
-library(tidyverse)
 data(txhousing)
-library(dplyr)
 glimpse(txhousing)
 ```
 The data set contains 8,602 observations and 9 variables. The variables are
@@ -25,13 +30,66 @@ median (double), listings (double), inventory (double), and date (double).
 
 # Activity 3
 ```{r}
-library(gapminder)
 data(gapminder)
-glimpse(gapminder)
-g <- ggplot(data = gapminder, mapping = aes(x = pop, y = gdpPercap))
-g + geom_point()
+p <- ggplot(data = gapminder, mapping = aes(x = pop, y = gdpPercap))
+p + geom_point()
 ```
 
 There could be strands of data points because there are many countries with
 similar GDPs but different populations, and many countries with similar
 populations but different GDPs.
+
+# Activity 4
+```{r}
+delta <- flights %>%
+    filter(carrier == "DL")
+p <- ggplot(data = delta, aes(x = distance, y = air_time))
+p + geom_point()
+```
+
+Longer distances have longer air times. The vertical bands are most likely
+because some flights travel the same distance but have different air times.
+
+# Activity 5
+```{r}
+jfk <- weather %>%
+    filter(origin == "JFK" & month == 1 & day <= 15)
+p <- ggplot(data = jfk, mapping = aes(x = time_hour, y = temp))
+p + geom_line()
+```
+
+The graphs look similar to each other, although the JFK graph has higher and
+lower peaks as compared to the Newark graph.
+
+# Activity 6
+```{r}
+p <- ggplot(data = weather, aes(x = factor(month), y = wind_speed))
+p + geom_boxplot() + ylim(0, 50)
+```
+
+# Activity 7
+```{r}
+def <- ggplot(data = weather, mapping = aes(x = wind_speed))
+def + geom_histogram(color = "white") + xlim(0, 40)
+wide <- ggplot(data = weather, mapping = aes(x = wind_speed))
+wide + geom_histogram(bins = 10, color = "white") + xlim(0, 40)
+narrow <- ggplot(data = weather, mapping = aes(x = wind_speed))
+narrow + geom_histogram(bins = 50, color = "white") + xlim(0, 40)
+```
+
+The graph with the narrowest bins gives the best summary. The first graph with
+auto-generated bin widths shows three peaks for wind speed: one at the very
+beginning, another around 10, and right before 20. The graph with the widest
+bin widths only shows one around 10. The graph with the narrowest bin widths
+shows that the peak is a little before 10, but the closest surrounding points
+are also very high.
+
+# Activity 8
+```{r}
+p <- ggplot(data = flights, mapping = aes(x = origin, fill = carrier))
+p + geom_bar(color = "white", position = position_dodge(preserve = "single"))
+```
+
+EWR: UA and EV, 
+JFK: B6 and DL, 
+LGA: DL and MQ
