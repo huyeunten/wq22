@@ -1,0 +1,8 @@
+green pink brown
+red green blue
+purple red green
+blue green purple
+yellow blue purple
+purple green pink
+pink purple yellow
+black white grey
