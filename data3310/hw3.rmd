@@ -1,0 +1,35 @@
+---
+title: HW 3
+author: Haley Uyeunten
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(gapminder)
+library(nycflights13)
+```
+
+# Activity 2
+```{r}
+def <- ggplot(data = weather, mapping = aes(x = wind_speed))
+def + geom_density(color = "darkblue", fill = "lightblue") + xlim(0, 40)
+smooth <- ggplot(data = weather, mapping = aes(x = wind_speed))
+smooth + geom_density(color = "darkblue", fill = "lightblue", bw = 5) + xlim(0, 40)
+jagged <- ggplot(data = weather, mapping = aes(x = wind_speed))
+jagged + geom_density(color = "darkblue", fill = "lightblue", bw = 0.5) + xlim(0, 40)
+```
+
+The graph with the default bandwidths in the most useful. It shows that there's
+a peak at the very beginning, and then another a little before 10. The smooth
+graph makes it look like the data has only one peak, and the jagged graph has
+so many smaller peaks that it's difficult to understand easily.
+
+# Activity 3
+```{r}
+p <- ggplot(data = weather, aes(x = factor(month), y = wind_speed))
+p + geom_violin() + ylim(0, 50)
+```
+
+The violin plots show the distribution of the data points, when in the box 
+plots, only the mean and interquartile range are easy to see. 

@@ -2,12 +2,13 @@
 January 18, 2022
 CPSC 3400 
 
-Write more here
+Accepts a file that contains a list of favorite colors. Creates a dictionary
+of colors. Can find the number of first place votes, score colors, and rank
+them based on their scores.
 """
 
 import sys
 
-# dictionary example: blue: (1, 2, 3)
 def process_file(file_name):
     """ Takes a file and creates a dictionary using colors as keys and
     a tuple that counts the number of times the color was ranked 1st/2nd/3rd
