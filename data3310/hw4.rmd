@@ -1,0 +1,40 @@
+---
+title: HW 3
+author: Haley Uyeunten
+output: html_document
+---
+
+# Activity 1
+```{r}
+library(tidyverse)
+library(gapminder)
+data(gapminder)
+c <- gapminder %>% filter(country == "Canada")
+#p <- ggplot(data = c, mapping = aes(x = pop, y = gdpPercap))
+#p + geom_line()
+p_time <- ggplot(data = c, mapping = aes(x = year, y = pop))
+    #geom_line(data = c, mapping = aes(x = year, y = gdpPercap)) +
+p_time + geom_point()
+```
+
+# Activity 2
+```{r}
+library(tidyverse)
+library(gapminder)
+data(gapminder)
+d <- gapminder %>% filter(year == 2007)
+p <- ggplot(data = d, mapping = aes(x = pop, y = gdpPercap, color = continent))
+p + geom_point() + scale_x_log10()
+```
+
+# Activity 3
+```{r}
+library(tidyverse)
+library(nycflights13)
+alaska_flights <- flights %>% filter(carrier == "AS")
+p <- ggplot(data = alaska_flights, aes(x = dep_delay, y = arr_delay))
+p + geom_point() + scale_x_log10()
+```
+
+The log of some points is not a number. If data has negative values, then
+the log can't be taken.
