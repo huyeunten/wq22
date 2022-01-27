@@ -1,0 +1,14 @@
+```{r}
+library(tidyverse)
+oh_wi <- c("OH", "WI")
+
+p <- ggplot(data = subset(midwest, subset = state %in% oh_wi),
+            mapping = aes(x = percollege, fill = state))
+p + geom_histogram(alpha = 0.4, bins = 20, position = "dodge")
+```
+
+```{r}
+library(tidyverse)
+p <- ggplot(data = c, mapping = aes(x = pop, y = gdpPercap))
+p + geom_line()
+```
