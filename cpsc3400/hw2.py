@@ -1,8 +1,10 @@
 """ HW2.py by Haley Uyeunten
-January 27, 2022
+January 30, 2022
 CPSC 3400
 
-write doctests this time
+Accepts a file containing two integers to represent hours and minutes, and
+PM/AM. Can find the latest time (max) and sort the times from earliest to
+latest.
 """
 
 import os.path
@@ -13,7 +15,9 @@ class ImproperTimeError(Exception): pass
 class FileNotFound(Exception): pass
 
 def create_time_list(file_name):
-    """ need to throw exceptions
+    """ Creates a list of time tuples from a file containing hours, minutes,
+    and AM/PM. Throws error if file is empty, or if times are incorrectly
+    formatted.
     :param file_name: the name of the file containing times
     :return: list of time tuples
     """
@@ -38,45 +42,69 @@ def create_time_list(file_name):
         raise EmptyFileError
     return time_list
 
-def time_to_midnight(time):
-    t_h = int(time[0])
-    t_m = int(time[1])
-    p = time[2]
-    h = 11 - t_h
-    if t_h == 12:
-        h = 11
-    if p == "AM":
-        h += 12
-    m = 60 - int(t_m)
-    return (h, m)
-    
-def time_compare_gen(time_list, target):
+def convert_to_military(time):
+    """ Converts given time from twelve hour AM/PM to 24 hour military time.
+    :param time: tuple consisting of hour, minute, and period
+    :return: tuple with hour and minute
     """
+    h = int(time[0])
+    m = int(time[1])
+    if time[2] == "PM" and h != 12:
+        h += 12
+    if time[2] == "AM" and h == 12:
+        h = 0
+    return (h, m)
+
+def count_hours(early, late):
+    """ Counts the hours between two given times.
+    :param early: starting time
+    :param late: ending time
+    :return: the number of hours between the times
+    """
+    early_h = int(early[0])
+    late_h = int(late[0]) - 1
+    count = 0
+    while (early_h != late_h):
+        if early_h == 23:
+            early_h = 0
+        else:
+            early_h += 1
+        count += 1
+    return count
+
+def time_compare_gen(time_list, target):
+    """ Generates a tuple of hours and minutes between a target time and every
+    time on the given list
     :param time_list: list of time tuples
     :param target: one time tuple
     :return: yield time between times in list and target time
     """
     for time in time_list:
-        midnight_time = time_to_midnight(time)
-        midnight_target = time_to_midnight(target)
-        yield (midnight_time[0] - midnight_target[0], midnight_time[1] - midnight_target[1])
-    #print(time_list)
-    #print(target)
-
+        m = (60 - int(target[1])) + int(time[1])
+        converted_time = convert_to_military(time)
+        converted_target = convert_to_military(target)
+        h = count_hours(converted_target, converted_time)
+        if m > 59:
+            h += 1
+            m %= 60
+        if h == 24:
+            h = 0
+        yield (h, m)
 
 if __name__ == "__main__":
     try:
-        file_name = sys.argv[1]
+       file_name = sys.argv[1]
     except IndexError:
-        print("Usage: hw2.py text_file.txt")
-        sys.exit(1)
+       print("Usage: hw2.py text_file.txt")
+       sys.exit(1)
     try:
         time_list = create_time_list(file_name)
         formatted_time = [h + ":" + m + " " + p for h, m, p in time_list]
         print(formatted_time)
-        print(max(time_list, key=lambda x:(x[2], int(x[0]), int(x[1]))))
-        print(sorted(time_list, key=lambda x:(x[2], int(x[0]), int(x[1]))))
+        print(max(time_list, key=convert_to_military))
+        print(sorted(time_list, key=convert_to_military))
         target = time_list[0]
+        time_compare_gen(time_list, target)
         time_compare_list = [t for t in time_compare_gen(time_list, target)]
         print(time_compare_list)
     except EmptyFileError:

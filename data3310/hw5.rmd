@@ -1,0 +1,35 @@
+---
+title: HW 4
+author: Haley Uyeunten
+output: html_document
+---
+
+# Activity 1
+```{r}
+library(tidyverse)
+library(socviz)
+p <- ggplot(data = gss_sm, mapping = aes(x = age, y = childs))
+p + geom_point(alpha = 0.2) + facet_grid(sex ~ happy)
+```
+
+# Activity 2
+```{r}
+happiness <- gss_sm %>%
+  group_by(bigregion, happy) %>%
+  summarize(N = n()) %>%
+  mutate(freq = N / sum(N),
+         pct = round((freq * 100), 0))
+p <- ggplot(data = happiness, aes(x = bigregion, y = pct, fill = happy))
+p + geom_bar(position = "dodge2", stat = "identity")
+```
+
+No, all the levels of happiness are similar between the regions.
+
+# Activity 3
+```{r}
+library(nycflights13)
+p <- ggplot(data = weather,
+    aes(x = reorder(factor(month), wind_speed, median, na.rm = TRUE),
+    y = wind_speed))
+p + geom_point() + ylim(0, 50)
+```

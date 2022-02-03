@@ -1,0 +1,27 @@
+```{r}
+library(tidyverse)
+library(gapminder)
+library(ggrepel)
+```
+
+```{r}
+data <- c("Canada", "United States", "Mexico")
+c <- gapminder %>% filter(country %in% data)
+p <- ggplot(data = c, mapping = aes(x = year, y = pop, color = country))
+p + geom_line(aes(group = country), show.legend = F)
+```
+
+```{r}
+us <- gapminder %>% filter(country == "United States")
+reg <- lm(data = us, pop ~ year)
+b0 <- reg$coefficients[1]
+b1 <- reg$coefficients[2]
+p <- ggplot(data = us, mapping = aes(x = year, y = pop))
+p + geom_line() + stat_smooth(method = "lm")
+detrend <- mutate(us, fitted = b0 + b1 * year, diff = pop - fitted)
+d <- ggplot(data = detrend, mapping = aes(x = year, y = pop))
+d + geom_line()
+```
+
+```{r}
+```
