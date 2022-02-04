@@ -50,7 +50,7 @@ if __name__ == "__main__":
     try:
         file_name = sys.argv[1]
         marked_swept = mark_sweep(file_name)
-        print("Marked nodes:", sep="", end=" ")
+        print("Marked nodes:", end=" ")
         for i in marked_swept["marked"]:
             print(i, end=" ")
         print("\nSwept nodes:", end = " ")
