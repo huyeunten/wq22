@@ -27,9 +27,41 @@ No, all the levels of happiness are similar between the regions.
 
 # Activity 3
 ```{r}
+library(tidyverse)
 library(nycflights13)
-p <- ggplot(data = weather,
-    aes(x = reorder(factor(month), wind_speed, median, na.rm = TRUE),
-    y = wind_speed))
-p + geom_point() + ylim(0, 50)
+m <- weather %>% group_by(month) %>% mutate(med = median(wind_speed, na.rm = FALSE))
+#m <- mutate(weather, med = median(wind_speed, na.rm = FALSE))
+p <- ggplot(data = m,
+    mapping = aes(x = factor(month), y = wind_speed))
+p + geom_point() + ylim(0, 50) + coord_flip()
+```
+
+# Activity 4
+```{r}
+a <- gapminder %>% filter(continent == "Americas" & year == "2007")
+p <- ggplot(data = a, mapping = aes(x = gdpPercap, y = pop))
+p + geom_point() + scale_x_log10() + geom_label_repel(
+    box.padding = 2,
+    nudge_y = -1,
+    aes(label = country),
+    max.overlaps = Inf)
+```
+
+# Activity 5
+```{r}
+a <- gapminder %>% filter(continent == "Americas" & year == "2007")
+p <- ggplot(data = a, mapping = aes(x = gdpPercap, y = pop))
+p + geom_point() + scale_x_log10() + geom_label_repel(
+      data = subset(a, gdpPercap > 30000),
+      mapping = aes(label = country)
+    ) + geom_label_repel(
+      data = subset(a, lifeExp < 68),
+      mapping = aes(label = country)
+    ) + annotate(
+      geom = "rect", xmin = 30000, xmax = 60000,
+      ymin = 0, ymax = 310000000, fill = "blue", alpha = 0.2
+    ) + annotate(
+      geom = "text", x = 45000, y = 150000000,
+      label = "High GDP"
+    )
 ```
