@@ -1,13 +1,19 @@
 ---
-title: HW 4
+title: HW 5
 author: Haley Uyeunten
 output: html_document
 ---
 
-# Activity 1
 ```{r}
 library(tidyverse)
 library(socviz)
+library(nycflights13)
+library(gapminder)
+library(ggrepel)
+```
+
+# Activity 1
+```{r}
 p <- ggplot(data = gss_sm, mapping = aes(x = age, y = childs))
 p + geom_point(alpha = 0.2) + facet_grid(sex ~ happy)
 ```
@@ -27,13 +33,16 @@ No, all the levels of happiness are similar between the regions.
 
 # Activity 3
 ```{r}
-library(tidyverse)
-library(nycflights13)
-m <- weather %>% group_by(month) %>% mutate(med = median(wind_speed, na.rm = FALSE))
-#m <- mutate(weather, med = median(wind_speed, na.rm = FALSE))
-p <- ggplot(data = m,
-    mapping = aes(x = factor(month), y = wind_speed))
-p + geom_point() + ylim(0, 50) + coord_flip()
+d <- weather %>%
+    group_by(month) %>%
+    summarize_if(is.numeric, list(median = median), na.rm = TRUE) %>%
+    ungroup()
+p <- ggplot(data = d,
+    mapping = aes(x = wind_speed_median, y = factor(month)))
+p + geom_point() + scale_y_discrete(breaks = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
+    labels = c("January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"),
+    limits = rev)
 ```
 
 # Activity 4
@@ -65,3 +74,5 @@ p + geom_point() + scale_x_log10() + geom_label_repel(
       label = "High GDP"
     )
 ```
+
+# Activity 6

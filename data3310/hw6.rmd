@@ -1,0 +1,59 @@
+---
+title: HW 6
+author: Haley Uyeunten
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(gapminder)
+library(RColorBrewer)
+```
+
+# Activity 1
+```{r}
+c <- gapminder %>% filter(country == "Canada")
+p <- ggplot(data = c, mapping = aes(x = year, y = pop))
+model_colors <- brewer.pal(3, "Dark2")
+p1 <- p + geom_point() + 
+    geom_smooth(method = "lm", aes(color = "Linear", fill = "Linear")) +
+    geom_smooth(method = "lm", formula = y ~ splines::bs(x, df = 3),
+                aes(color = "Cubic Spline", fill = "Cubic Spline")) +
+    geom_smooth(method = "loess", aes(color = "LOESS", fill = "LOESS"))
+
+p1 + scale_color_manual(name = "Models", values = model_colors) +
+    scale_fill_manual(name = "Models", values = model_colors) +
+    theme(legend.position = "right")
+```
+ 
+
+# Activity 2
+
+Using the gapminder data, looking at only data from the
+Americas, fit a linear regression to predict population
+as a function of year and country. Calculate predicted
+values for years ranging from 1950 to 2025, in intervals
+of five years. Include a 95% prediction interval. Plot
+your predictions for two countries of your choosing.
+In addition, create a plot of the residuals versus the
+fitted values. What does this plot tell you about the
+reasonableness of using a linear model here?
+
+```{r}
+a <- gapminder %>% filter(continent == "Americas")
+reg <- lm(data = a, pop ~ year + country)
+b0 <- reg$coefficients[1]
+b1 <- reg$coefficients[2]
+v <- mutate(a, fitted = b0 + b1 * year, diff = pop - fitted)
+p <- ggplot(data = v, mapping = aes(x = country, y = pop))
+p + geom_line()
+```
+
+# Activity 3
+
+Using the gapminder data, use the nest function to fit a separate regression model
+for every country in the Americas, predicting population size as a function of year.
+Use geom_pointrange() to display the slopes for each of these models, with error
+bars based on two standard errors. Based on this graph, what can you say about how
+the population growth rates compare for countries in the Americas?
+
