@@ -8,6 +8,7 @@ output: html_document
 library(tidyverse)
 library(gapminder)
 library(RColorBrewer)
+library(broom)
 ```
 
 # Activity 1
@@ -15,7 +16,7 @@ library(RColorBrewer)
 c <- gapminder %>% filter(country == "Canada")
 p <- ggplot(data = c, mapping = aes(x = year, y = pop))
 model_colors <- brewer.pal(3, "Dark2")
-p1 <- p + geom_point() + 
+p1 <- p + geom_point() +
     geom_smooth(method = "lm", aes(color = "Linear", fill = "Linear")) +
     geom_smooth(method = "lm", formula = y ~ splines::bs(x, df = 3),
                 aes(color = "Cubic Spline", fill = "Cubic Spline")) +
@@ -28,32 +29,53 @@ p1 + scale_color_manual(name = "Models", values = model_colors) +
  
 
 # Activity 2
-
-Using the gapminder data, looking at only data from the
-Americas, fit a linear regression to predict population
-as a function of year and country. Calculate predicted
-values for years ranging from 1950 to 2025, in intervals
-of five years. Include a 95% prediction interval. Plot
-your predictions for two countries of your choosing.
-In addition, create a plot of the residuals versus the
-fitted values. What does this plot tell you about the
-reasonableness of using a linear model here?
-
 ```{r}
 a <- gapminder %>% filter(continent == "Americas")
 reg <- lm(data = a, pop ~ year + country)
+all <- mutate(a, pred = predict(reg, newdata = a, level = 0.95))
+c <- all %>% filter(country == "Canada")
+g1 <- ggplot(data = c, aes(x = year, y = pop))
+g1 + geom_point()
+p <- all %>% filter(country == "Peru")
+g2 <- ggplot(data = p, aes(x = year, y = pop))
+g2 + geom_point()
 b0 <- reg$coefficients[1]
 b1 <- reg$coefficients[2]
-v <- mutate(a, fitted = b0 + b1 * year, diff = pop - fitted)
-p <- ggplot(data = v, mapping = aes(x = country, y = pop))
-p + geom_line()
+c_detrend <- mutate(c, fitted = b0 + b1 * year, diff = pop - fitted)
+g3 <- ggplot(data = c_detrend, aes(x = diff, y = fitted))
+g3 + geom_line()
+p_detrend <- mutate(p, fitted = b0 + b1 * year, diff = pop - fitted)
+g4 <- ggplot(data = p_detrend, aes(x = diff, y = fitted))
+g4 + geom_line()
 ```
 
+It shows that the linear model isn't reasonable, since there's so much inconsistent 
+difference between the predicted values and the actual values.
+
 # Activity 3
+```{r}
+fit_ols <- function(df) {
+    lm(lifeExp ~ log(gdpPercap), data = df)
+}
 
-Using the gapminder data, use the nest function to fit a separate regression model
-for every country in the Americas, predicting population size as a function of year.
-Use geom_pointrange() to display the slopes for each of these models, with error
-bars based on two standard errors. Based on this graph, what can you say about how
-the population growth rates compare for countries in the Americas?
+out_le <- gapminder %>%
+    filter(continent == "Americas") %>%
+    group_by(country, year) %>%
+    nest() %>%
+    mutate(model = map(data, fit_ols),
+            tidied = map(model, tidy)) %>%
+    unnest(tidied)
 
+p <- ggplot(data = out_le,
+            mapping = aes(x = year, y = estimate,
+                          ymin = estimate - 2 * std.error,
+                          ymax = estimate + 2 * std.error,
+                          group = country, color = country))
+
+p + geom_pointrange(position = position_dodge(width = 1)) +
+    scale_x_continuous(breaks = unique(gapminder$year)) +
+    theme(legend.position = "top") +
+    labs(x = "Year", y = "Estimate", color = "Country")
+```
+
+The populations of each country all increase as years increase.

@@ -2,7 +2,6 @@
 // February 13, 2022
 // CPSC 3400
 
-(* Write about the function here *)
 let rec maxCylinderVolume dim =
     match dim with
     | [] -> 0.0
@@ -13,23 +12,39 @@ let rec maxCylinderVolume dim =
 let rec elimDuplicatesRec values prev =
     match values with
     | [] -> []
+    | h :: t when t = [] -> prev :: elimDuplicatesRec t h
     | h :: t when h = prev -> elimDuplicatesRec t h
     | h :: t -> prev :: elimDuplicatesRec t h
 
 let elimDuplicates values =
-    let h :: t = values
-    elimDuplicatesRec t h
+    match values with
+    | [] -> []
+    | h :: t -> elimDuplicatesRec t h
 
-// let insert value tree = 
-// let search value tree = 
-// let count func tree =
-// let evenCount tree = 
-// i don't like BSTs 
+type BST =
+    | Empty
+    | TreeNode of int * BST * BST
 
-let average a b c = 
-    float (a + b + c) / 3.0 
- 
-let compare x y = 
-    if x > y then "GREATER" 
-    elif x < y then "LESS" 
-    else "EQUAL" 
+let rec insert value tree = 
+    match tree with
+    | Empty -> TreeNode(value, Empty, Empty)
+    | TreeNode(v, l, r) when value < v -> TreeNode(v, insert value l, r)
+    | TreeNode(v, l, r) when value > v -> TreeNode(v, l, insert value r)
+    | _ -> tree
+
+let rec search value tree =
+    match tree with
+    | Empty -> false
+    | TreeNode(v, l, r) when value = v -> true
+    | TreeNode(v, l, r) when value < v -> search value l
+    | TreeNode(v, l, r) when value > v -> search value r
+    | _ -> false
+
+let rec count func tree =
+    match tree with
+    | Empty -> 0
+    | TreeNode(v, l, r) when func v -> 1 + count func l + count func r
+    | TreeNode(v, l, r) -> count func l + count func r
+
+let evenCount tree = 
+    count (fun v -> v % 2 = 0) tree
