@@ -7,3 +7,5 @@ package-lock.json
 ABS_State_2017.csv
 .fake
 .ionide
+tree_sales.xlsx
+~$tree_sales.xlsx

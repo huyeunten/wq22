@@ -1,0 +1,72 @@
+---
+title: HW 8
+author: Haley Uyeunten
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(maps)
+library(socviz)
+library(readxl)
+library(lubridate)
+```
+
+# Activity 1
+```{r}
+us_states <- map_data("state")
+election$region <- tolower(election$state)
+us_states_elec <- left_join(us_states, election)
+
+p0 <- ggplot(data = us_states_elec,
+             aes(x = long, y = lat, group = group, fill = pct_johnson))
+
+p1 <- p0 + geom_polygon(color = "gray90", size = 0.1) +
+    coord_map(projection = "albers", lat0 = 39, lat1 = 45)
+
+p2 <- p1 + scale_fill_gradient2(low = "white",
+                                high = "#fed105")
+p2 + labs(fill = "Percent")
+```
+
+# Activity 2
+```{r}
+trees <- read_excel("C:\\Users\\huyeu\\Documents\\GitHub\\cpsc3400\\code\\data3310\\tree_sales.xlsx")
+trees <- trees %>%
+     rename(
+         amount = Amount,
+         date = "Close Date",
+         zip = "Mailing Zip/Postal Code"
+     )
+trees$date <- mdy(trees$date)
+sales_by_date <- trees %>%
+    group_by(date) %>%
+    summarise(num = n(), amt = sum(amount))
+```
+
+```{r}
+num_sales_vs_date <- ggplot(data = sales_by_date,
+                            mapping = aes(x = date, y = num))
+num_sales_vs_date + geom_line() + labs(x = "Close Date",
+    y = "Number")
+sales_vs_date <- ggplot(data = sales_by_date,
+                        mapping = aes(x = date, y = amt))
+sales_vs_date + geom_line() + labs(x = "Close Date",
+    y = "Sales ($)")
+```
+
+```{r}
+zip_code_sales <- trees %>%
+    group_by(zip) %>%
+    summarise(num = n(), amt = sum(amount))
+zip_code_sales <- zip_code_sales[complete.cases(zip_code_sales), ]
+zip_code_sales <- zip_code_sales[order(-zip_code_sales$num), ]
+```
+
+```{r}
+top_ten_zip <- head(zip_code_sales, 10)
+num_vs_zip <- ggplot(data = top_ten_zip, aes(x = zip, y = num))
+num_vs_zip + geom_col() + labs(x = "Zip Code", y = "Number")
+sales_vs_zip <- ggplot(data = top_ten_zip, aes(x = zip, y = amt))
+sales_vs_zip + geom_col() + labs(x = "Zip Code", y = "Sales ($)")
+```

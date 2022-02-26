@@ -1,0 +1,64 @@
+```{r}
+library(tidyverse)
+full_df <- read.csv("C:\\Users\\huyeu\\Downloads\\Full_2017_ABS_US.csv")
+```
+
+```{r}
+full_df <- read.csv("C:\\Users\\huyeu\\Downloads\\Full_2017_ABS_US.csv")
+
+full_df <- full_df %>%
+  rename(
+    naics_code_6_digit = NAICS2017,
+    naics_label = NAICS2017_LABEL,
+    industry_level = INDLEVEL,
+    industry_group = INDGROUP,
+    subsector = SUBSECTOR,
+    naics_footnote = NAICS2017_F,
+    sector = SECTOR,
+    sex_code = SEX,
+    sex_label = SEX_LABEL,
+    ethnicity_code = ETH_GROUP,
+    ethnicity_label = ETH_GROUP_LABEL,
+    race_code = RACE_GROUP,
+    race_label = RACE_GROUP_LABEL,
+    vet_code = VET_GROUP,
+    vet_label = VET_GROUP_LABEL,
+    year = YEAR,
+    employer_firms = FIRMPDEMP,
+    sales = RCPPDEMP,
+    employees = EMP,
+    annual_payroll = PAYANN,
+    st_err_employer_firms = FIRMPDEMP_S,
+    st_err_sales = RCPPDEMP_S,
+    st_err_employees = EMP_S,
+    st_err_payroll = PAYANN_S
+  )
+```
+
+```{r}
+gender_by_sector <- full_df %>%
+    filter(sex_label == "Female" | sex_label == "Male"
+          | sex_label == "Equally male/female")
+glimpse(gender_by_sector)
+p <- ggplot(data = gender_by_sector,
+    mapping = aes(x = sex_label, y = employees))
+p + geom_col() + coord_flip() + facet_grid(sector ~ .)
+```
+
+```{r}
+hispanic_by_sector <- full_df %>%
+    filter(ethnicity_label == "Hispanic" |
+          ethnicity_label == "Equally Hispanic/non-Hispanic" |
+          ethnicity_label == "Non-Hispanic")
+p <- ggplot(data = hispanic_by_sector,
+    mapping = aes(x = ethnicity_label, y = employees))
+p + geom_col() + coord_flip() + facet_grid(sector ~ .)
+```
+
+```{r}
+race_by_sector <- full_df %>%
+    filter(race_code != 98 & race_code != 96 & race_code != 92 & race_code != 90 & race_label != "Total" & race_label != "Meaning of Race code")
+p <- ggplot(data = race_by_sector,
+    mapping = aes(x = race_label, y = employees))
+p + geom_col() + coord_flip() + facet_grid(sector ~ .)
+```
