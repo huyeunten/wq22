@@ -10,6 +10,7 @@ library(maps)
 library(socviz)
 library(readxl)
 library(lubridate)
+library(RColorBrewer)
 ```
 
 # Activity 1
@@ -70,3 +71,174 @@ num_vs_zip + geom_col() + labs(x = "Zip Code", y = "Number")
 sales_vs_zip <- ggplot(data = top_ten_zip, aes(x = zip, y = amt))
 sales_vs_zip + geom_col() + labs(x = "Zip Code", y = "Sales ($)")
 ```
+
+# Activity 3
+```{r}
+full_df <- read.csv("C:\\Users\\huyeu\\Downloads\\Full_2017_ABS_US.csv", na.strings = c("S", "D", "N", "X"))
+full_df <- full_df %>%
+  rename(
+    geo_id = GEO_ID,
+    geo_footnote = GEO_ID_F,
+    geo_name = NAME,
+    naics_code_6_digit = NAICS2017,
+    naics_label = NAICS2017_LABEL,
+    industry_level = INDLEVEL,
+    industry_group = INDGROUP,
+    subsector = SUBSECTOR,
+    naics_footnote = NAICS2017_F,
+    sector = SECTOR,
+    sex_code = SEX,
+    sex_label = SEX_LABEL,
+    ethnicity_code = ETH_GROUP,
+    ethnicity_label = ETH_GROUP_LABEL,
+    race_code = RACE_GROUP,
+    race_label = RACE_GROUP_LABEL,
+    vet_code = VET_GROUP,
+    vet_label = VET_GROUP_LABEL,
+    year = YEAR,
+    employer_firms = FIRMPDEMP,
+    sales = RCPPDEMP,
+    employees = EMP,
+    annual_payroll = PAYANN,
+    st_err_employer_firms = FIRMPDEMP_S,
+    st_err_sales = RCPPDEMP_S,
+    st_err_employees = EMP_S,
+    st_err_payroll = PAYANN_S
+  )
+
+full_df <- full_df[-1,]
+full_df$sales <- as.integer(full_df$sales)
+full_df$employer_firms <- as.integer(full_df$employer_firms)
+full_df$sales_per_firm <- full_df$sales/full_df$employer_firms
+
+sm_df <- full_df %>%
+  select(c(naics_code_6_digit, naics_label, sector, sex_label, ethnicity_label, race_label, vet_label, employer_firms, sales, sales_per_firm, st_err_employer_firms, st_err_sales))
+
+full_sector_labels <- c(`11`="Agriculture, Forestry, Fishing, and Hunting", `21`="Mining, Quarrying, and Oil and Gas Extraction", `22`="Utilities", `23`="Construction", `31`="Manufacturing", `42`="Wholesale Trade", `44`="Retail Trade", `48`="Transportation and Warehousing", `51`="Information", `52`="Finance and Insurance", `53`="Real Estate and Rental and Leasing", `54`="Professional, Scientific, and Technical Services", `55`="Management of Companies and Enterprises", `56`="Administrative and Support and Waste Management and Remediation Services", `61`="Educational Services", `62`="Health Care and Social Assistance", `71`="Arts, Entertainment, and Recreation", `72`="Accommodation and Food Services", `81`="Other Services (except Public Administration)")
+
+sector_labels <- c(`11`="Agr.", `21`="Nat. Res.", `22`="Util.", `23`="Constr.", `31`="Manu.", `42`="Whole. Trade", `44`="Ret. Trade", `48`="Transp. & Ware.", `51`="Info.", `52`="Fin. & Ins.", `53`="Real Est.", `54`="Sci. & Tech.", `55`="Mgmt", `56`="Wst. Mgmt", `61`="Educ.", `62`="Hlth. & Soc.", `71`="Arts & Ent.", `72`="Acc. & Food", `81`="Other")
+
+sector_labeller <- as_labeller(sector_labels)
+
+model_colors <- brewer.pal(8,"Dark2")
+model_colors
+```
+
+
+1. Employees by sector
+```{r}
+employeesBySector <- full_df %>%
+  select(sector, employees) %>%
+  group_by(sector)
+
+p <- ggplot(data = employeesBySector, mapping = aes(x = sector, y = employees))
+p + geom_col() + coord_flip()
+```
+
+The graph shows the comparative number of employees for each sector. Sector 31,
+manufacturing, has much more employees than the other sectors.
+
+2. Employees by race by sector
+```{r}
+race_by_sector <- full_df %>%
+    filter(race_code != 98 & race_code != 96 & race_code != 92 & race_code != 90 & race_label != "Total" & race_label != "Meaning of Race code")
+p <- ggplot(data = race_by_sector,
+    mapping = aes(x = race_label, y = employees))
+p + geom_col() + coord_flip() + facet_grid(sector ~ .)
+```
+
+From this graph, most sectors have mostly white-owned businesses. Sector 31 has a
+much higher number of white-owned businesses than other races. Sectors 23 (construction)
+and 55 (management of companies and enterprises) are the most even across all the races.
+
+3. Employees by gender by sector
+```{r}
+gender_by_sector <- full_df %>%
+    filter(sex_label == "Female" | sex_label == "Male"
+          | sex_label == "Equally male/female")
+p <- ggplot(data = gender_by_sector,
+    mapping = aes(x = sex_label, y = employees))
+p + geom_col() + coord_flip() + facet_grid(sector ~ .)
+```
+
+This graph shows that most sectors have a fairly even number of male-owned,
+female-owned, and equally male/female-owned businesses. Sector 31 is again the
+only sector with a much larger number of male-owned businesses.
+
+4. Mean average sales per firm by race and sector
+```{r}
+salespf_sector <- sm_df %>%
+  select(sector, sales_per_firm, race_label) %>%
+  group_by(sector, race_label) %>%
+  filter(race_label!="Unclassifiable", race_label!="Total", race_label!="Classifiable", race_label!="Minority", race_label!="Nonminority", race_label!="Equally minority/nonminority") %>%
+  summarise(mean = mean(sales_per_firm, na.rm=T))
+p <- ggplot(data = salespf_sector, mapping = aes(x = race_label, y = mean))
+p + geom_col(position="dodge") + facet_wrap(sector ~ ., scales = "fixed", labeller = sector_labeller) + coord_flip() + labs(x="Race", y="Mean Average Sales per Firm")
+```
+
+This graph shows that for most sectors, the white-owned businesses have the
+highest average sales. There are only five sectors (manufacturing, wholesale
+trade, management, waste management, arts and entertainment) where white-owned
+businesses do not have the highest sales.
+
+# Activity 4
+1. Employees by race sector using color
+```{r}
+race_by_sector <- full_df %>%
+    filter(race_code != 98 & race_code != 96 & race_code != 92 & race_code != 90 & race_label != "Total" & race_label != "Meaning of Race code")
+race_by_sector <- race_by_sector %>%
+    group_by(sector, race_label) %>%
+    summarise(num = n())
+p <- ggplot(data = race_by_sector,
+    mapping = aes(x = sector, y = num, fill = race_label))
+p + geom_col(position = "dodge2") + coord_flip() +
+    scale_x_discrete(labels = sector_labels) +
+    scale_fill_manual(values = model_colors)
+```
+
+2. Employees by gender by sector using color
+```{r}
+gender_by_sector <- full_df %>%
+    filter(sex_label == "Female" | sex_label == "Male"
+          | sex_label == "Equally male/female")
+gender_by_sector <- gender_by_sector %>%
+    group_by(sector, sex_label) %>%
+    summarise(num = n())
+p <- ggplot(data = gender_by_sector,
+    mapping = aes(x = sector, y = num, fill = sex_label))
+p + geom_col(position = "dodge2") + coord_flip() +
+    scale_x_discrete(labels = sector_labels) +
+    scale_fill_manual(values = model_colors)
+```
+
+3. Mean average total sales by race in each sector with separate bars
+```{r}
+sales_sector <- sm_df %>%
+  select(sector, sales, race_label) %>%
+  filter(race_label!="Unclassifiable", race_label!="Total", race_label!="Classifiable", race_label!="Minority", race_label!="Nonminority", race_label!="Equally minority/nonminority") %>%
+  group_by(sector, race_label) %>%
+  summarise(mean = mean(sales, na.rm = T))
+  p <- ggplot(data = sales_sector, mapping = aes(x = sector, y = mean, fill=race_label))
+
+p + geom_col(position = "dodge2") + coord_flip() +
+    scale_fill_manual(values = model_colors) +
+    scale_x_discrete(labels = sector_labels)
+```
+
+4. Sales by sector using a bar graph
+```{r}
+salesBySector <- full_df %>%
+  select(sector, sales) %>%
+  group_by(sector)
+
+p <- ggplot(data = salesBySector,
+        mapping = aes(x = sector, y = sales))
+p + geom_col() + coord_flip() +
+    scale_x_discrete(labels = sector_labels)
+```
+
+# Activity 5
+1. How can we better scale the axes for things like sales to make them easier to read/understand?
+2. When should we use the standard error for number of firms, sales, payroll, etc?
+3. Should percentages be used when dividing data by sector, since some sectors have more businesses?
+4. How could we look at data by NAICS code when there's so many different codes?
