@@ -1,0 +1,119 @@
+---
+title: HW 9
+author: Haley Uyeunten
+output: html_document
+---
+
+```{r}
+library(RColorBrewer)
+library(tidyverse)
+```
+
+```{r}
+full_df <- read.csv("C:\\Users\\huyeu\\Downloads\\Full_2017_ABS_US.csv", na.strings = c("S", "D", "N", "X"))
+full_df <- full_df %>%
+  rename(
+    geo_id = GEO_ID,
+    geo_footnote = GEO_ID_F,
+    geo_name = NAME,
+    naics_code_6_digit = NAICS2017,
+    naics_label = NAICS2017_LABEL,
+    industry_level = INDLEVEL,
+    industry_group = INDGROUP,
+    subsector = SUBSECTOR,
+    naics_footnote = NAICS2017_F,
+    sector = SECTOR,
+    sex_code = SEX,
+    sex_label = SEX_LABEL,
+    ethnicity_code = ETH_GROUP,
+    ethnicity_label = ETH_GROUP_LABEL,
+    race_code = RACE_GROUP,
+    race_label = RACE_GROUP_LABEL,
+    vet_code = VET_GROUP,
+    vet_label = VET_GROUP_LABEL,
+    year = YEAR,
+    employer_firms = FIRMPDEMP,
+    sales = RCPPDEMP,
+    employees = EMP,
+    annual_payroll = PAYANN,
+    st_err_employer_firms = FIRMPDEMP_S,
+    st_err_sales = RCPPDEMP_S,
+    st_err_employees = EMP_S,
+    st_err_payroll = PAYANN_S
+  )
+
+full_df <- full_df[-1,]
+full_df$sales <- as.integer(full_df$sales)
+full_df$employer_firms <- as.integer(full_df$employer_firms)
+full_df$sales_per_firm <- full_df$sales/full_df$employer_firms
+full_df$employees <- as.integer(full_df$employees)
+full_df$annual_payroll <- as.integer(full_df$annual_payroll)
+```
+
+```{r}
+vehicle_manufacturing <- full_df %>%
+    filter(naics_code_6_digit == "336112")
+```
+
+```{r}
+vm_gender <- vehicle_manufacturing %>%
+    filter(sex_label == "Male" | sex_label == "Female"
+        | sex_label == "Equally male/female")
+```
+
+```{r}
+vm_gender_firms <- ggplot(data = vm_gender, mapping = aes(x = employer_firms, y = sex_label))
+vm_gender_firms + geom_col()
+```
+
+```{r}
+vm_gender_emp <- ggplot(data = vm_gender, mapping = aes(x = employees, y = sex_label))
+vm_gender_emp + geom_col()
+```
+
+```{r}
+vm_gender_sales <- ggplot(data = vm_gender, mapping = aes(x = sales, y = sex_label))
+vm_gender_sales + geom_col()
+```
+
+```{r}
+vm_gender_salesfirm <- ggplot(data = vm_gender, mapping = aes(x = sales_per_firm, y = sex_label))
+vm_gender_salesfirm + geom_col()
+```
+
+```{r}
+vm_gender_pay <- ggplot(data = vm_gender, mapping = aes(x = sales_per_firm, y = sex_label))
+vm_gender_pay + geom_col()
+```
+
+```{r}
+vm_eth <- vehicle_manufacturing %>%
+    filter(ethnicity_label != "Total" &
+        ethnicity_label != "Unclassifiable" &
+        ethnicity_label != "Classifiable")
+p <- ggplot(data = vm_eth, mapping = aes(x = sales, y = ethnicity_label))
+p + geom_col()
+```
+
+```{r}
+vm_eth_emp <- ggplot(data = vm_eth, mapping = aes(x = employees, y = ethnicity_label))
+vm_eth_emp + geom_col()
+```
+
+```{r}
+vm_eth_emp <- ggplot(data = vm_eth, mapping = aes(x = annual_payroll, y = ethnicity_label))
+vm_eth_emp + geom_col()
+```
+
+```{r}
+vm_race <- vehicle_manufacturing %>%
+    filter(race_label != "Total" & race_label != "Unclassifiable" &
+            race_label != "Classifiable")
+```
+
+```{r}
+vm_race_salesfirm <- ggplot(data = vm_race, mapping = aes(x = sales_per_firm, y = race_label))
+vm_race_salesfirm + geom_col()
+```
+
+payroll, employees, sales by firm, sales

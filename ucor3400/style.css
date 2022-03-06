@@ -1,12 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Merriweather&family=Poppins:wght@600&display=swap');
 
+img {
+    max-width: 100%;
+    max-height: auto;
+}
+
 .header {
     overflow: hidden;
-    background-color: #91adc2;
+    background-color: #91adc2 !important;
     padding: 20px 10px;
     font-family: "Poppins";
     position: sticky;
     top: 0;
+    opacity: 1;
 }
 
 .header a {
@@ -27,7 +33,7 @@
 
 .header a:hover {
     color: white;
-    background-color: gray;
+    background-color: #79b473;
 }
 
 .header a:active {
@@ -38,8 +44,34 @@
     float: right;
 }
 
-.content {
+.frontpage {
+    display: flex;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.key-terms {
     align-items: center;
+    display: flex;
+}
+
+.key-content {
+    align-items: center;
+    font-size: 14px;
     font-family: "Merriweather";
-    font-size: 50px;
+    color: black;
+    padding: 2%;
+}
+
+.foot {
+    position: static;
+    background-color: #79b473;
+    color: white;
+    font-family: "Merriweather";
+    font-size: 14px;
+    left: 0px;
+    bottom: 0px;
+    width: 100%;
+    align-items: center;
+    padding: 5px;
 }
