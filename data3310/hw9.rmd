@@ -96,7 +96,7 @@ p + geom_col()
 ```
 
 ```{r}
-vm_eth_emp <- ggplot(data = vm_eth, mapping = aes(x = employees, y = ethnicity_label))
+vm_eth_emp <- ggplot(data = vm_eth, mapping = aes(x = employer_firms, y = ethnicity_label))
 vm_eth_emp + geom_col()
 ```
 
@@ -112,7 +112,7 @@ vm_race <- vehicle_manufacturing %>%
 ```
 
 ```{r}
-vm_race_salesfirm <- ggplot(data = vm_race, mapping = aes(x = sales_per_firm, y = race_label))
+vm_race_salesfirm <- ggplot(data = vm_race, mapping = aes(x = employer_firms, y = race_label))
 vm_race_salesfirm + geom_col()
 ```
 
