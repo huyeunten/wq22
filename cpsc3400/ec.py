@@ -3,8 +3,13 @@
 """
 
 class NotFloat(Exception): pass
+class BadScript(Exception): pass
 
 def interpret(script, csv, pipeline):
+    with open(script, 'r') as script_file:
+        p = file.readline().split()
+    for str in p:
+        
     names = []
     data = {}
     count = 0

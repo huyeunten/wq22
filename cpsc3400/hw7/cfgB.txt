@@ -1,0 +1,13 @@
+Start -> A
+A -> B | K
+B -> xC
+C -> zD
+D -> B
+K -> F | I
+F -> xG
+G -> xH
+H -> M
+I -> zJ
+J -> yL | M
+L -> M
+M -> F | I | Empty

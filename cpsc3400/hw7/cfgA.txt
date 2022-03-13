@@ -1,0 +1,8 @@
+Start -> A
+A -> B | H
+B -> 1B | 1C | Empty
+C -> 1C | 0D
+D -> 1D | 0B
+H -> 0F | 1F | Empty
+F -> 0G | 1G
+G -> 0H | 1H

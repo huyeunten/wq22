@@ -1,0 +1,54 @@
+---
+title: HW 9
+author: Haley Uyeunten
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(readr)
+```
+
+```{r}
+full_df <- read.csv("C:\\Users\\huyeu\\Documents\\GitHub\\cpsc3400\\code\\data3310\\Full_2017_3_Dig.csv", na.strings = c("S", "D", "N", "X"))
+full_df <- full_df %>%
+  rename(
+    naics_code_6_digit = NAICS2017,
+    naics_label = NAICS2017_LABEL,
+    sex_label = SEX_LABEL,
+    ethnicity_label = ETH_GROUP_LABEL,
+    race_label = RACE_GROUP_LABEL,
+    employer_firms = FIRMPDEMP,
+    sales = RCPPDEMP,
+  )
+
+full_df$sales <- as.integer(full_df$sales)
+full_df$employer_firms <- as.integer(full_df$employer_firms)
+full_df$sales_per_firm <- full_df$sales/full_df$employer_firms
+```
+
+```{r}
+pipe <- full_df %>%
+    filter(naics_code_6_digit == 486)
+pipe_gender <- pipe %>%
+    filter(sex_label == "Female" | sex_label == "Male")
+pipe_race <- pipe %>%
+    filter(race_label != "Total" & race_label != "Classifiable" & race_label != "Unclassifiable")
+pipe_eth <- pipe %>%
+    filter(ethnicity_label != "Total" & ethnicity_label != "Classifiable" & ethnicity_label != "Unclassifiable")
+```
+
+```{r}
+pipe_gender_plot <- ggplot(data = pipe_gender, mapping = aes(x = employer_firms, y = sex_label))
+pipe_gender_plot + geom_col() + labs(x = "Number of Firms", y = "Gender")
+```
+
+```{r}
+pipe_race_plot <- ggplot(data = pipe_race, mapping = aes(x = employer_firms, y = race_label))
+pipe_race_plot + geom_col() + labs(x = "Number of Firms", y = "Race")
+```
+
+```{r}
+pipe_eth_plot <- ggplot(data = pipe_eth, mapping = aes(x = employer_firms, y = ethnicity_label))
+pipe_eth_plot + geom_col() + labs(x = "Number of Firms", y = "Ethnicity")
+```
